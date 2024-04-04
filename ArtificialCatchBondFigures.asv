@@ -1,0 +1,277 @@
+%% Figure 2d
+
+figure;
+hold on
+ylabel('Lifetime (s)')
+yscale('log')
+plot(F,tjaw(:,intersectionindex))
+plot(F,thookunzip(:,intersectionindex))
+plot(F,thookshear(:,intersectionindex))
+plot(F,meant(:,intersectionindex))
+xlim([0 20]);
+
+%% Figure 2e-f
+
+figure;
+hold on;
+plot(curve1,plotF,"Color",c1,"LineWidth",3);
+plot(curve2,plotF,"Color",c3,"LineWidth",3);
+xlabel('Extension (nm)')
+ylabel('Force (pN)')
+
+%% Figure 3a
+
+figure;
+tiledlayout('horizontal');
+nexttile;
+hold on;
+for i = 1:length(FEC)
+    line(FEC(i).x(1:5:end) + fecoffsets(i)/2 + o,repmat(i,size(FEC(i).F(1:5:end))),FEC(i).F(1:5:end),'Color',fecswitched(i,:))
+end
+view(-55,18);
+xlabel('Extension (nm)')
+ylabel('Trace #')
+zlabel('Force (pN)')
+zlim([-2, 40])
+
+%% Figure 3b
+
+figure;
+tiledlayout('horizontal');
+nexttile;
+hold on;
+for i = 1:length(FEC)
+    line(FEC(i).x(1:5:end) + fecoffsets(i)/2 + o,FEC(i).F(1:5:end),'Color',fecswitched(i,:))
+end
+xlabel('Extension (nm)')
+ylabel('Force (pN)')
+
+%% Figure 3b (inset)
+
+figure
+histogram(medfit(4,~isnan(fithairpin))-medfit(3,~isnan(fithairpin)),15:0.3:25,'FaceColor',c2,'FaceAlpha',1)
+ylim([0 150])
+xline(lc2-lc1,'k--','LineWidth',2)
+xlabel('\Delta x (nm)')
+
+%% Figure 3c
+
+figure;
+t1 = tiledlayout(3,2,"Padding","tight",'TileSpacing','compact');
+nexttile(t1,1);
+histogram(slowrupF,edges,'FaceColor',c1,'FaceAlpha',1,'EdgeColor','k');
+title(['Loading Rate = ' num2str(v(1)) ' nm/s'])
+legend(['n = ' num2str(length(slowrupF))],'Location','north')
+
+nexttile(t1,3);
+histogram(medrupF,edges,'FaceColor',c2,'FaceAlpha',1,'EdgeColor','k');
+title(['Loading Rate = ' num2str(v(2)) ' nm/s'])
+legend(['n = ' num2str(length(medrupF))],'Location','north')
+
+nexttile(t1,5);
+histogram(fastrupF,edges,'FaceColor',c3,'FaceAlpha',1,'EdgeColor','k');
+title(['Loading Rate = ' num2str(v(3)) ' nm/s'])
+legend(['n = ' num2str(length(fastrupF))],'Location','north')
+
+a = {};
+
+for i = 1:length(v)
+    switched_sum = sum(rswitched_array);
+    a{end+1} = nexttile(t1,i*2);
+    histogram(rrupture_forces(i,:),edges);
+    title(['Loading Rate, ' num2str(v(i)) ' nm/s '])
+end
+
+set(a{1}.Children(1), 'FaceColor',c1,'FaceAlpha',1,'EdgeColor','k');
+set(a{2}.Children(1), 'FaceColor',c2,'FaceAlpha',1,'EdgeColor','k');
+set(a{3}.Children(1), 'FaceColor',c3,'FaceAlpha',1,'EdgeColor','k');
+xlabel(t1,'Rupture Force (pN)');
+
+set(a{1}.Children(1), 'FaceColor',c1,'FaceAlpha',1,'EdgeColor','k');
+set(a{2}.Children(1), 'FaceColor',c2,'FaceAlpha',1,'EdgeColor','k');
+set(a{3}.Children(1), 'FaceColor',c3,'FaceAlpha',1,'EdgeColor','k');
+xlabel(t1,'Rupture Force (pN)');
+
+%% Figure 3d
+
+figure;
+hold on;
+xscale(gca,"log");
+
+scatter(slowLR(isnan(slowhairpinF)), slowrupF(isnan(slowhairpinF)),[],c1rgb,'.')
+scatter(slowLR(~isnan(slowhairpinF)), slowrupF(~isnan(slowhairpinF)),[],c3rgb,'.')
+scatter(medLR(isnan(medhairpinF)), medrupF(isnan(medhairpinF)),[],c1rgb,'.')
+scatter(medLR(~isnan(medhairpinF)), medrupF(~isnan(medhairpinF)),[],c3rgb,'.')
+scatter(fastLR(isnan(fasthairpinF)), fastrupF(isnan(fasthairpinF)),[],c1rgb,'.')
+scatter(fastLR(~isnan(fasthairpinF)), fastrupF(~isnan(fasthairpinF)),[],c3rgb,'.')
+xlabel('Loading Rate (pN/s)')
+ylabel('Rupture Force (pN)')
+
+scatter(rrupture_lr(1,:),rrupture_forces(1,:),'ko','filled','MarkerFaceAlpha',0.1,'SizeData',5)
+scatter(rrupture_lr(2,:),rrupture_forces(2,:),'ko','filled','MarkerFaceAlpha',0.1,'SizeData',5)
+scatter(rrupture_lr(3,:),rrupture_forces(3,:),'ko','filled','MarkerFaceAlpha',0.1,'SizeData',5)
+
+%% Figure 3e
+
+figure; xscale("log")
+hold on
+errorbar(10.^v2, sp, sqrt(sp.*(1-sp)./n),'m.')
+errorbar(v(1), slowprop, sqrt(slowprop*(1-slowprop)/length(slowF)), 'o','Color',c1,'MarkerFaceColor','auto')
+errorbar(v(2), medprop, sqrt(medprop*(1-medprop)/length(medF)), 'o','Color',c2,'MarkerFaceColor','auto')
+errorbar(v(3), fastprop, sqrt(fastprop*(1-fastprop)/length(fastF)), 'o','Color',c3,'MarkerFaceColor','auto')
+xlabel("Pulling Rate (nm/s)")
+ylabel("P_F of Jaw Opening")
+legend({"Model","Slow", "Medium", "Fast"},'Location','northwest')
+plot(10.^v2, sp,'b-')
+
+
+
+%% Figure 4-part 1
+
+figure
+
+ax1 = nexttile;
+	inflection_xx = inflectionFtrunc(:,catchtf);
+	inflection_yy = inflectiontautrunc(:,catchtf);
+	slope = catchbonddeltalog10tau./catchbonddeltaF;
+	[~,sort_order] = sort(slope);
+	inflection_xx = inflection_xx(:,sort_order);
+	inflection_yy = inflection_yy(:,sort_order);
+	colortauF_sorted = colortauF(sort_order,:);
+
+	plot_gap = 1;
+	line(inflection_xx(:,1:plot_gap:end),inflection_yy(:,1:plot_gap:end));
+	colororder(ax1,colortauF_sorted(1:plot_gap:end,:))
+	yscale('log')
+	ylabel('\tau (s)')
+	xlabel('F (pN)')
+
+nexttile 
+	hold on;
+	scatter(catchbonddeltaF,catchbonddeltalog10tau,[],colortauF,'.')
+	ylabel('\Delta log(\tau)')
+	xlabel('\Delta F (pN)')
+
+nexttile
+	hold on
+	[~,idx] = min(catchbonddeltaF);
+	plot(F,catchbondmeant(:,idx),"Color",colortauF(idx,:))
+	[~,idx] = max(catchbonddeltaF);
+	plot(F,catchbondmeant(:,idx),"Color",colortauF(idx,:))
+	
+	yscale('log')
+	xlim([0 40])
+	ylim([0.1 100])
+	xlabel('Force (pN)')
+	ylabel('\tau (s)')
+
+nexttile
+	hold on
+	
+	[~,idx] = min(catchbonddeltalog10tau);
+	plot(F,catchbondmeant(:,idx),"Color",colortauF(idx,:))
+	[~,idx] = max(catchbonddeltalog10tau);
+	plot(F,catchbondmeant(:,idx),"Color",colortauF(idx,:))
+	
+	yscale('log')
+	xlim([0 40])
+	ylim([0.1 100])
+
+    %% Figure 4-part 2
+
+test = [[catchbonds.switchCG]' [catchbonds.switchL]'];
+[~,~,ic] = unique(test, 'rows', 'stable');
+h = accumarray(ic, 1);
+maph = h(ic);
+colortest = [maph];
+
+figure;
+nexttile;
+	iscJaw = nan(max([catchbonds.switchCG]) - min([catchbonds.switchCG])+ 1,max([catchbonds.switchL])-min([catchbonds.switchL])+ 1);
+	for i = 1:length(colortest)
+    	x = catchbonds(i).switchCG + 1;
+    	y = catchbonds(i).switchL + 1;
+   	iscJaw(x,y) = colortest(i);
+	end
+
+	catchbonds_fa = struct2fieldarray(catchbonds);
+	switchCG_min = min(catchbonds_fa.switchCG);
+	switchCG_max = max(catchbonds_fa.switchCG);
+	switchL_min = min(catchbonds_fa.switchL);
+	switchL_max = max(catchbonds_fa.switchL);
+
+	% imagesc([0 15],[30 11],flipud(iscJaw'));
+	% imagesc([0 switchCG_max],[switchL_max 0],flipud(iscJaw'));
+	imagesc([0 switchL_max],[switchCG_max 0],flipud(iscJaw));
+	axis equal;
+	axis tight;
+	ylim([-1 12]);
+	xlim([10 31]);
+
+	set(gca,'YDir','normal')
+	colormap(gca, 'jet');
+	colormap([1 1 1; colormap]);
+	ylabel('Jaw CG')
+	xlabel('Jaw Length')
+	colorbar
+
+nexttile;
+	test = [[catchbonds.bondCG]' [catchbonds.bondL]'];
+	[~,~,ic] = unique(test, 'rows', 'stable');
+	h = accumarray(ic, 1);
+	maph = h(ic);
+	colortest = [maph];
+	
+	iscHook = nan(max([catchbonds.bondCG]) - min([catchbonds.bondCG])+ 1,max([catchbonds.bondL])-min([catchbonds.bondL])+ 1);
+	for i = 1:length(colortest)
+    	x = catchbonds(i).bondCG + 1;
+    	y = catchbonds(i).bondL + 1;
+   	iscHook(x,y) = colortest(i);
+	end
+
+	catchbonds_fa = struct2fieldarray(catchbonds);
+	bondCG_min = min(catchbonds_fa.bondCG);
+	bondCG_max = max(catchbonds_fa.bondCG);
+	bondL_min = min(catchbonds_fa.bondL);
+	bondL_max = max(catchbonds_fa.bondL);
+	
+	% imagesc([0 15],[30 11],flipud(iscHook')); 
+	% imagesc([0 bondCG_max],[bondL_max 0],flipud(iscHook')); 
+	imagesc([0 bondL_max],[bondCG_max 0],flipud(iscHook)); 
+	axis equal;
+	axis tight;
+	ylim([-1 10]);
+	xlim([6 22]);
+
+	set(gca,'YDir','normal')
+	colormap(gca, 'jet');
+	colormap([1 1 1; colormap]);
+	
+	ylabel('Hook CG')
+	xlabel('Hook Length')
+	colorbar
+
+nexttile;
+	hold on;
+	title('Jaw Length: 27; CGs: 0')
+	scatter([catchbonds(fixedJaw).bondL],[catchbonds(fixedJaw).bondCG],[],colortauF(fixedJaw,:),'.');
+	xlabel('Length (bp)')
+	ylabel('CG Proportion')
+	axis equal
+	xlim([5 20])
+	ylim([-1 10])
+	
+
+nexttile;
+	hold on;
+	title('Hook Length: 8; CGs: 8')
+	scatter([catchbonds(fixedHook).switchL],[catchbonds(fixedHook).switchCG],[],colortauF(fixedHook,:),'.');
+	xlabel('Length (bp)')
+	ylabel('CG #')
+	axis equal
+	xlim([10 30])
+	ylim([-1 10])
+
+	%% figure 4 color box
+				[xg, yg, cg] = plot2dGradient(5,5,0,0,'r','b','','',[min(catchbonddeltaF) max(catchbonddeltaF)],[min(catchbonddeltalog10tau) max(catchbonddeltalog10tau)]);
+
