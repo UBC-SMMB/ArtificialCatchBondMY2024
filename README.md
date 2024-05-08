@@ -16,11 +16,9 @@ Software: MATLAB 2023b+
 1. Clear your workspace.
 2. Open runCatchBondSim.m. Set parameters in the first subsection:
 
-  a. number of sequences to generate and average (nSeq)
-
-  b. sequence (sLength array containing the DNA lengths you would like to probe; minimum length is 7 bp)
-  
-  c. salt (struct containing sodium, potassium, and magnesium concentrations in M)
+- number of sequences to generate and average (nSeq)
+- sequence (sLength array containing the DNA lengths you would like to probe; minimum length is 7 bp)
+- salt (struct containing sodium, potassium, and magnesium concentrations in M)
   
 4. Run subsection 1. Depending on how many sequences/parameters you are testing, this could take several minutes.
 5. Run subsection 2. This will create an intersections array containing all sequence pairs which have the jaw and hook unzipping in the correct order.
