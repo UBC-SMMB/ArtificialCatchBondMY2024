@@ -15,7 +15,7 @@ Software: MATLAB 2023b+
 ## Running the Analytical Simulation
 1. Clear your workspace.
 2. Open runCatchBondSim.m. Set parameters in the first subsection:
-3. 
+
   a. number of sequences to generate and average (nSeq)
 
   b. sequence (sLength array containing the DNA lengths you would like to probe; minimum length is 7 bp)
