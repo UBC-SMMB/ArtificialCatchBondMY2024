@@ -9,8 +9,8 @@ Software: MATLAB 2023b+
 
 ## Generating the figures used in the paper
 1. Clear your workspace.
-2. Import the contents of FigureData.mat.
-3. Run the ArtificialCatchBondFigures.m script. The subsections of this script should be runnable in any order.
+2. Import the contents of Data.mat.
+3. Run the ArtificialCatchBondFigures.m script. The subsections of this script should be runnable in any order, with the exception of the first section, which processes the data which was imported and thus must be run first.
 
 ## Running the Analytical Simulation
 1. Clear your workspace.
